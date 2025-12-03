@@ -1,20 +1,68 @@
 import 'package:flutter/material.dart';
 
-class QuestionScreen extends StatelessWidget {
-  const QuestionScreen({super.key});
+import 'package:w9_quiz_app/model/quiz.dart';
+import 'package:w9_quiz_app/ui/widgets/app_button.dart';
+
+
+
+
+class QuestionScreen extends StatefulWidget {
+  final Quiz quiz;
+  final VoidCallback onFinish;
+
+  const QuestionScreen({
+    super.key,
+    required this.quiz,
+    required this.onFinish,
+  });
+
+  @override
+  State<QuestionScreen> createState() => _QuestionScreenState();
+}
+
+class _QuestionScreenState extends State<QuestionScreen> {
+  int currentQuestionIndex = 0;
+  String? selectedAnswer;
+  bool showResult = false;
+
+  void answerQuestion(String answer) {
+    if (showResult) return;
+
+    setState(() {
+      selectedAnswer = answer;
+      widget.quiz.answerQuestion(currentQuestionIndex, answer);
+      showResult = true;
+    });
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+
+      final lastIndex = widget.quiz.questions.length - 1;
+
+      if (currentQuestionIndex < lastIndex) {
+        setState(() {
+          currentQuestionIndex++;
+          selectedAnswer = null;
+          showResult = false;
+        });
+      } else {
+        widget.onFinish();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final question = widget.quiz.questions[currentQuestionIndex];
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Container(
-          width: 500,
-          height: 400,
           decoration: BoxDecoration(
             color: Colors.blue,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 color: Colors.black26,
                 blurRadius: 6,
@@ -23,58 +71,44 @@ class QuestionScreen extends StatelessWidget {
             ],
           ),
           padding: const EdgeInsets.all(16),
-          child: Center(
-            child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("What is the capital of France?",
-                style: TextStyle(
+              Text(
+                question.title,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
+                textAlign: TextAlign.center,
               ),
+
               const SizedBox(height: 40),
 
-              ElevatedButton.icon(
-                icon: const Icon(Icons.check),
-                label: const Text("Paris"),
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 40,
+             
+              ...question.choice.map((answer) {
+                Color buttonColor = Colors.white;
+
+                if (showResult) {
+                  if (answer == question.goodChoice) {
+                    buttonColor = Colors.green;
+                  } else if (answer == selectedAnswer) {
+                    buttonColor = Colors.red;
+                  }
+                }
+
+                return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                 child: AppButton(
+                  answer,
+                  onTap: () => answerQuestion(answer),
+                  color: buttonColor,
                   ),
-                ),
-              ),
-              const SizedBox(height: 25),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.close),
-                label: const Text("London"),
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 40,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 25),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.close),
-                label: const Text("Berlin"),
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 40,
-                  ),
-                ),
-              ),
+                );
+              }).toList(),
             ],
           ),
-          ),
-          
         ),
       ),
     );

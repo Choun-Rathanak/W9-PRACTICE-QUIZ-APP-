@@ -1,106 +1,133 @@
 import 'package:flutter/material.dart';
-
+import '../widgets/roundabout_number.dart';
+import '../../model/quiz.dart';
+import '../../model/answer.dart';
+import '../widgets/app_button.dart';
 class ResultScreen extends StatelessWidget {
-  // final VoidCallback? onRestart;
-  const ResultScreen({super.key});
+  final Quiz quiz;
+  final VoidCallback onRestart;
+
+  const ResultScreen({super.key, required this.quiz, required this.onRestart});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'You answered 1 on 2 !',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.none, 
-                ),
-                textAlign: TextAlign.center,
-              ),
-             Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.star,
-                    color: Colors.yellow,
-                    size: 30,
-                  ),
-                  Text("What is london",
-                  style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.none, 
-                ),
-                  ),
-                ],
-              ),
-             Column(
-              children: [
-               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                const Icon(
-                 Icons.check,
-                  color: Colors.black,
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(color: Colors.blue.shade500),
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "You Answer correct ${quiz.score} of ${quiz.questions.length}",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
           ),
-              const SizedBox(width: 8), 
-                const Text(
-                "Paris",
-                style: TextStyle(
-                color: Colors.green,
-          ),
-        ),
-      ],
-    ),
-        const SizedBox(height: 16),
-             const Text(
-                "Paris",
-                style: TextStyle(
-                color: Colors.black,
+          Expanded(
+            child: ListView.builder(
+              itemCount: quiz.answers.length,
+              itemBuilder: (context, index) => SingleAnswerView(
+                userAnswer: quiz.answers[index],
+                questionNumber: index, 
               ),
             ),
-               const Text(
-                "Paris",
-                style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-             
-              const SizedBox(height: 50),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.close),
-                label: const Text(
-                  "Restart Quiz",
-                  style: TextStyle(
-                    decoration: TextDecoration.none, 
-                  ),
-                ),
-                onPressed: (){},
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 40,
-                  ),
-                ),
-              ),
-            ],
           ),
-        ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 150),
+            child: AppButton(
+              "Restart Quiz",
+              onTap: onRestart, 
+            ),
+          ),
+                  SizedBox(height: 30,)
+
+        ],
       ),
     );
   }
 }
+class SingleAnswerView extends StatelessWidget {
+  final Answer userAnswer;
+  final int questionNumber;
 
+  const SingleAnswerView({
+    super.key,
+    required this.userAnswer,
+    required this.questionNumber,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+       
+        Row(
+          children: [
+            RoundaboutNumber(
+              number: questionNumber + 1,
+              color: userAnswer.isCorrect() ? Colors.green : Colors.red,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                userAnswer.question.title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
+        ),
+ 
+        ...userAnswer.question.options.map((option) {
+          IconData? markIcon;
+          Color markColor = Colors.black;
+
+          if (option == userAnswer.question.correctAnswer) {
+            markIcon = Icons.check;
+            markColor = Colors.green;
+          } else if (option == userAnswer.selectedAnswer &&
+              option != userAnswer.question.correctAnswer) {
+            markIcon = Icons.close;
+            markColor = Colors.red;
+          }
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: markIcon != null
+                      ? Icon(markIcon, size: 20, color: markColor)
+                      : null,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    option,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: markColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+}

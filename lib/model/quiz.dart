@@ -1,9 +1,32 @@
-import 'package:w9_quiz_app/model/answer.dart';
-import 'package:w9_quiz_app/model/question.dart';
+import '../model/answer.dart';
+import '../model/question.dart';
+
 class Quiz {
-  final List<Question> questions;
-  
+  List<Question> questions;
+  List<Answer> answers = [];
 
   Quiz({required this.questions});
-}
+
+
+  void answerQuestion(int index, String choice) {
+    final question = questions[index];
+
+  
+    answers.removeWhere((a) => a.question == question);
+
+    answers.add(Answer(
+      question: question,
+      selectedAnswer: choice,
+    ));
+  }
+
+
+  int get score => answers.where((a) => a.isCorrect()).length;
+
+  double get percent => (score / questions.length) * 100;
+
  
+  void reset() {
+    answers.clear();
+  }
+}
