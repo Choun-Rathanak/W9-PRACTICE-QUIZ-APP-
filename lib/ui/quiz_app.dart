@@ -21,7 +21,7 @@ class _QuizAppState extends State<QuizApp> {
       current = ChangeScreen.question;
     });
 
-    widget.quiz.reset();
+    
   }
   
 

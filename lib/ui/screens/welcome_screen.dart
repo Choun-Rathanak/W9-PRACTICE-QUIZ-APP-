@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../widgets/app_button.dart';
 class WelcomeScreen extends StatelessWidget {
   final VoidCallback onStart;
 
@@ -37,16 +37,11 @@ class WelcomeScreen extends StatelessWidget {
                 fit: BoxFit.contain,
               ),
               const SizedBox(height: 50),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.play_arrow),
-                label: const Text("Start Quiz"),
-                onPressed: onStart, 
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 40,
-                  ),
-                ),
+              AppButton(
+                icon: Icons.play_arrow,
+                "Start Quiz",
+                onTap: onStart,   
+                
               ),
             ],
           ),

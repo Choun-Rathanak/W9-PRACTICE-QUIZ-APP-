@@ -11,8 +11,6 @@ class Quiz {
   void answerQuestion(int index, String choice) {
     final question = questions[index];
 
-  
-    answers.removeWhere((a) => a.question == question);
 
     answers.add(Answer(
       question: question,
@@ -26,7 +24,5 @@ class Quiz {
   double get percent => (score / questions.length) * 100;
 
  
-  void reset() {
-    answers.clear();
-  }
+  
 }
