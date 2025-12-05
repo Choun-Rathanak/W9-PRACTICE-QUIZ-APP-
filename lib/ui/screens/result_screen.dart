@@ -89,7 +89,7 @@ class SingleAnswerView extends StatelessWidget {
  
         ...userAnswer.question.options.map((option) {
           IconData? markIcon;
-          Color markColor = Colors.black;
+          Color? markColor;
 
           if (option == userAnswer.question.correctAnswer) {
             markIcon = Icons.check;

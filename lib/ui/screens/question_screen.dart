@@ -35,7 +35,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
     });
 
     Future.delayed(const Duration(milliseconds: 500), () {
-      if (!mounted) return;
+    
 
       final lastIndex = widget.quiz.questions.length - 1;
 

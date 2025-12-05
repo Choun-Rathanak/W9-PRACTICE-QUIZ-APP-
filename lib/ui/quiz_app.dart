@@ -9,7 +9,7 @@ enum ChangeScreen { welcome, question, result }
 class QuizApp extends StatefulWidget {
   const QuizApp({super.key, required this.quiz});
   final Quiz quiz;
-  @override
+  @override 
   State<QuizApp> createState() => _QuizAppState();
 }
 
