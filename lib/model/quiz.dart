@@ -18,7 +18,9 @@ class Quiz {
     ));
   }
 
-
+  void reset() {
+    answers.clear();
+  }
   int get score => answers.where((a) => a.isCorrect()).length;
 
   double get percent => (score / questions.length) * 100;
